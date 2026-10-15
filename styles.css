@@ -1,0 +1,15 @@
+.es-modal { width: min(920px, 94vw); }
+.es-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; }
+@media (max-width: 720px) { .es-layout { grid-template-columns: 1fr; } }
+.es-left { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.es-search { width: 100%; }
+.es-bar { display: flex; align-items: center; gap: 8px; }
+.es-count { flex: 1; color: var(--text-muted); font-size: var(--font-ui-small); }
+.es-tree { height: 420px; overflow: auto; border: 1px solid var(--background-modifier-border); border-radius: var(--radius-m); padding: 4px 0; }
+.es-row { display: flex; align-items: center; gap: 6px; min-height: 26px; padding-right: 8px; }
+.es-row:hover { background: var(--background-modifier-hover); }
+.es-arrow { width: 14px; flex: none; text-align: center; color: var(--text-muted); cursor: pointer; user-select: none; }
+.es-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.es-label.is-folder { font-weight: var(--font-semibold); }
+.es-right { max-height: 460px; overflow: auto; }
+.es-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }

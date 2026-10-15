@@ -1,0 +1,9 @@
+{
+  "id": "export-studio",
+  "name": "Export Studio",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Export notes to PDF or HTML with clickable links between exported notes, a note picker, cover page, contents and page numbers.",
+  "author": "encomjp",
+  "isDesktopOnly": true
+}
