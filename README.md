@@ -3,6 +3,12 @@
 Export notes to **PDF** or **HTML** with Starnote's clean look, and with **clickable links between the
 exported notes**. Desktop only, no dependencies besides the plugin.
 
+<a href="https://www.paypal.com/donate/?hosted_button_id=H4SCC24R8KS4A"><img src="https://img.shields.io/badge/%E2%98%95_Buy_Me_a_Coffee-PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="Buy me a coffee" height="36" /></a>
+
+![Export dialog with a note tree and options](docs/picker.png)
+
+![A page of the exported PDF: blue links jump to the other exported notes](docs/pdf-page.png)
+
 - **Note picker.** Choose notes from a folder tree (filter, folder checkboxes, **Add linked notes**), or
   right-click a note, folder, or a multi-selection in the file explorer and choose **Export…**.
 - **Linked PDFs.** `[[wikilinks]]` between exported notes become blue links that jump to the note or
@@ -29,6 +35,10 @@ npm install && npm run build
 ```
 
 `npm test` runs the unit tests for the link, anchor and selection logic.
+
+## Support
+
+If this saves you time, you can [buy me a coffee](https://www.paypal.com/donate/?hosted_button_id=H4SCC24R8KS4A).
 
 ## Not an official product
 
