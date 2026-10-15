@@ -28,6 +28,15 @@ writes the HTML instead and you can print it from a browser.
 
 ## Install
 
+### Easiest: BRAT (installs and keeps it updated)
+
+1. Install **BRAT** from Settings → Community plugins → Browse, and enable it.
+2. Run the command **BRAT: Add a beta plugin for testing** and enter `encomjp/obsidian-export`, or click
+   [this link](obsidian://brat?plugin=encomjp/obsidian-export) with BRAT installed.
+3. Enable the plugin under Settings → Community plugins. BRAT then updates it with every release.
+
+### Manual
+
 Unzip into `<vault>/.obsidian/plugins/export-studio/` and enable **Export Studio**. To build:
 
 ```bash
