@@ -28,7 +28,11 @@ writes the HTML instead and you can print it from a browser.
 
 ## Install
 
-### Easiest: BRAT (installs and keeps it updated)
+### Obsidian directory
+
+Export Studio is listed in the official Obsidian plugin directory: [community.obsidian.md/plugins/export-studio](https://community.obsidian.md/plugins/export-studio). Install it from there, or from Settings → Community plugins → Browse once it appears for you.
+
+### BRAT (installs and keeps it updated)
 
 1. Install **BRAT** from Settings → Community plugins → Browse, and enable it.
 2. Run the command **BRAT: Add a beta plugin for testing** and enter `encomjp/obsidian-export`, or click
