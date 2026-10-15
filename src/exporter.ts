@@ -66,16 +66,16 @@ async function freeName(app: App, folder: string, name: string): Promise<string>
 
 export function announce(app: App, result: ExportResult) {
   const first = result.written[0];
-  const note = new Notice("", 12000);
-  const el = note.messageEl ?? (note as unknown as { noticeEl: HTMLElement }).noticeEl;
-  el.empty();
   const where = result.written.length === 1 ? first! : `${result.written.length} files in ${first!.split("/").slice(0, -1).join("/") || "vault"}`;
-  el.createSpan({ text: (result.fellBack ? "PDF printing is unavailable here; wrote HTML instead (open it and use Print). " : "Exported ") + where + " " });
-  if (first) {
-    const open = el.createEl("a", { text: "Open", href: "#" });
-    open.addEventListener("click", (event) => {
-      event.preventDefault();
-      void (app as unknown as { openWithDefaultApp(path: string): Promise<void> }).openWithDefaultApp(first);
-    });
-  }
+  const fragment = createFragment((el) => {
+    el.createSpan({ text: (result.fellBack ? "PDF printing is unavailable here; wrote HTML instead (open it and use Print). " : "Exported ") + where + " " });
+    if (first) {
+      const open = el.createEl("a", { text: "Open", href: "#" });
+      open.addEventListener("click", (event) => {
+        event.preventDefault();
+        void (app as unknown as { openWithDefaultApp(path: string): Promise<void> }).openWithDefaultApp(first);
+      });
+    }
+  });
+  new Notice(fragment, 12000);
 }

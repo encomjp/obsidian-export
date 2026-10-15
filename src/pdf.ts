@@ -9,10 +9,42 @@ interface PrintWindow {
   webContents: { printToPDF(options: Record<string, unknown>): Promise<Uint8Array> };
 }
 
-function remote(): { BrowserWindow: new (options: Record<string, unknown>) => PrintWindow } | null {
+interface ElectronRemote {
+  BrowserWindow: new (options: Record<string, unknown>) => PrintWindow;
+}
+
+interface NodeModules {
+  fs: typeof import("node:fs");
+  os: typeof import("node:os");
+  path: typeof import("node:path");
+  url: typeof import("node:url");
+}
+
+type RequireFn = (id: string) => unknown;
+
+/** The only place that touches the desktop-only `require`; everything else is typed. */
+function nodeRequire(): RequireFn | null {
+  const req = (window as unknown as { require?: RequireFn }).require;
+  return typeof req === "function" ? req : null;
+}
+
+function nodeModules(): NodeModules {
+  const req = nodeRequire();
+  if (!req) throw new Error("This Obsidian build does not expose PDF printing.");
+  return {
+    fs: req("node:fs") as NodeModules["fs"],
+    os: req("node:os") as NodeModules["os"],
+    path: req("node:path") as NodeModules["path"],
+    url: req("node:url") as NodeModules["url"],
+  };
+}
+
+function remote(): ElectronRemote | null {
+  const req = nodeRequire();
+  if (!req) return null;
   try {
-    const electron = require("electron");
-    return electron.remote ?? require("@electron/remote");
+    const electron = req("electron") as { remote?: ElectronRemote };
+    return electron.remote ?? (req("@electron/remote") as ElectronRemote);
   } catch {
     return null;
   }
@@ -25,10 +57,7 @@ export function canPrintPdf(): boolean {
 export async function printToPdf(html: string, options: ExportOptions): Promise<Uint8Array> {
   const electron = remote();
   if (!electron) throw new Error("This Obsidian build does not expose PDF printing.");
-  const fs = require("node:fs") as typeof import("node:fs");
-  const os = require("node:os") as typeof import("node:os");
-  const path = require("node:path") as typeof import("node:path");
-  const url = require("node:url") as typeof import("node:url");
+  const { fs, os, path, url } = nodeModules();
   const file = path.join(os.tmpdir(), `export-studio-${Date.now()}-${Math.random().toString(16).slice(2)}.html`);
   fs.writeFileSync(file, html, "utf8");
   const win = new electron.BrowserWindow({ show: false, webPreferences: { sandbox: true, javascript: false, contextIsolation: true } });

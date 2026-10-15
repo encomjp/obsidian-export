@@ -30,7 +30,7 @@ export class AnchorMap {
   headingId(path: string, text: string): string {
     const noteId = this.noteId(path);
     let table = this.headings.get(path);
-    if (!table) this.headings.set(path, (table = new Map()));
+    if (!table) this.headings.set(path, (table = new Map<string, string>()));
     const base = slug(text) || "section";
     let key = base;
     for (let n = 2; table.has(key); n++) key = `${base}-${n}`;
@@ -46,11 +46,14 @@ export class AnchorMap {
   }
 }
 
+// Characters illegal in file names plus C0 control characters (built from char codes to avoid literal control characters in the source).
+const UNSAFE_NAME_CHARS = new RegExp('[<>:"/\\\\|?*#^[\\]' + String.fromCharCode(0) + "-" + String.fromCharCode(31) + "]", "g");
+
 const RESERVED = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i;
 
 /** A file name that is safe on Windows, macOS and Linux, unique among `taken` (case-insensitive). */
 export function uniqueFileName(base: string, ext: string, taken: Set<string>): string {
-  let name = base.replace(/\s+/g, " ").replace(/[<>:"/\\|?*#^[\]\u0000-\u001f]/g, "-").replace(/^[ .]+|[ .]+$/g, "");
+  let name = base.replace(/\s+/g, " ").replace(UNSAFE_NAME_CHARS, "-").replace(/^[ .]+|[ .]+$/g, "");
   if (!name) name = "Untitled";
   if (RESERVED.test(name)) name = `_${name}`;
   name = name.slice(0, 120).replace(/[ .]+$/g, "");
@@ -62,7 +65,7 @@ export function uniqueFileName(base: string, ext: string, taken: Set<string>): s
 
 /** Strips a leading YAML front matter block. */
 export function stripFrontMatter(markdown: string): string {
-  return markdown.replace(/^﻿?---[ \t]*\r?\n(?:[\s\S]*?\r?\n)?(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/, "");
+  return markdown.replace(/^\uFEFF?---[ \t]*\r?\n(?:[\s\S]*?\r?\n)?(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/, "");
 }
 
 /** The part of a note under a heading (until the next heading of the same or a higher level). */

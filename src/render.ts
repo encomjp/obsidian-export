@@ -41,13 +41,9 @@ export class NoteRenderer {
   async renderNote(file: TFile): Promise<RenderedNote> {
     const markdown = stripFrontMatter(await this.app.vault.cachedRead(file));
     const id = this.anchors.noteId(file.path);
-    const section = document.createElement("section");
-    section.className = "note" + (this.options.newPagePerNote ? " page-break" : "");
+    const section = createEl("section", { cls: "note" + (this.options.newPagePerNote ? " page-break" : "") });
     section.id = id;
-    const title = document.createElement("h1");
-    title.className = "note-title";
-    title.textContent = file.basename;
-    section.appendChild(title);
+    section.appendChild(createEl("h1", { cls: "note-title", text: file.basename }));
     const outline: RenderedNote["outline"] = [];
     const body = await this.renderMarkdown(markdown, file, 0, outline);
     section.appendChild(body);
@@ -55,8 +51,7 @@ export class NoteRenderer {
   }
 
   private async renderMarkdown(markdown: string, file: TFile, depth: number, outline: RenderedNote["outline"] | null): Promise<HTMLElement> {
-    const host = document.createElement("div");
-    host.className = "markdown-rendered note-body";
+    const host = createDiv({ cls: "markdown-rendered note-body" });
     host.setCssProps({ position: "fixed", left: "-99999px", top: "0", width: "820px", visibility: "hidden" });
     document.body.appendChild(host);
     const component = new Component();
@@ -83,7 +78,7 @@ export class NoteRenderer {
       if (heading.closest(".embed-note")) continue;
       const level = Number(heading.tagName.slice(1));
       const text = (heading.getAttribute("data-heading") ?? heading.textContent ?? "").trim();
-      const next = document.createElement(`h${Math.min(6, level + 1 + depth)}`);
+      const next = createEl(`h${Math.min(6, level + 1 + depth)}` as keyof HTMLElementTagNameMap);
       for (const attr of Array.from(heading.attributes)) if (attr.name !== "id") next.setAttribute(attr.name, attr.value);
       while (heading.firstChild) next.appendChild(heading.firstChild);
       if (depth === 0) {
@@ -107,8 +102,7 @@ export class NoteRenderer {
       let markdown = stripFrontMatter(await this.app.vault.cachedRead(target));
       if (fragment.startsWith("^")) markdown = sliceBlock(markdown, fragment.slice(1)) ?? markdown;
       else if (fragment) markdown = sliceHeading(markdown, fragment.split("#").pop() ?? "") ?? markdown;
-      const box = document.createElement("div");
-      box.className = "embed-note";
+      const box = createDiv({ cls: "embed-note" });
       box.appendChild(await this.renderMarkdown(markdown, target, depth + 1, null));
       embed.replaceWith(box);
     }
@@ -117,7 +111,7 @@ export class NoteRenderer {
   /** Marks links to notes with their target; the final href is set once every note is rendered. */
   private processLinks(root: HTMLElement, file: TFile) {
     for (const a of Array.from(root.querySelectorAll<HTMLAnchorElement>("a"))) {
-      if (a.classList.contains("tag")) { const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = a.textContent; a.replaceWith(tag); continue; }
+      if (a.classList.contains("tag")) { const tag = createSpan({ cls: "tag", text: a.textContent ?? "" }); a.replaceWith(tag); continue; }
       if (a.classList.contains("internal-link")) {
         const href = a.getAttribute("data-href") ?? a.getAttribute("href") ?? "";
         const [linkpath = "", fragment = ""] = splitFirst(href, "#");
@@ -158,11 +152,11 @@ export class NoteRenderer {
   }
 
   private fileLink(file: TFile, text: string): HTMLElement {
-    const a = document.createElement("a");
-    a.className = "embed-file external-note";
-    a.href = `obsidian://open?vault=${encodeURIComponent(this.app.vault.getName())}&file=${encodeURIComponent(file.path)}`;
-    a.textContent = text;
-    return a;
+    return createEl("a", {
+      cls: "embed-file external-note",
+      text,
+      attr: { href: `obsidian://open?vault=${encodeURIComponent(this.app.vault.getName())}&file=${encodeURIComponent(file.path)}` },
+    });
   }
 
   private async inlineImages(root: HTMLElement) {
@@ -211,38 +205,29 @@ export function assembleDocument(input: AssembleInput): string {
   const { title, notes, options } = input;
   const doc = document.implementation.createHTMLDocument(title);
   doc.documentElement.lang = navigator.language || "en";
-  const meta = doc.createElement("meta");
-  meta.setAttribute("charset", "utf-8");
-  doc.head.appendChild(meta);
-  const style = doc.createElement("style");
-  style.textContent = buildCss() + (input.extraCss ?? "");
-  doc.head.appendChild(style);
+  doc.head.appendChild(createEl("meta", { attr: { charset: "utf-8" } }));
+  doc.head.appendChild(createEl("style", { text: buildCss() + (input.extraCss ?? "") }));
 
   if (options.cover && !input.single) {
-    const cover = doc.createElement("header");
-    cover.className = "cover";
-    const h = doc.createElement("h1");
-    h.textContent = title;
-    const when = doc.createElement("div");
-    when.className = "meta";
+    const cover = createEl("header", { cls: "cover" });
+    const h = createEl("h1", { text: title });
+    const when = createDiv({ cls: "meta" });
     when.textContent = `${new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })} · ${notes.length} note${notes.length === 1 ? "" : "s"}`;
     cover.append(h, when);
     doc.body.appendChild(cover);
   }
   if (options.toc && !input.single && notes.length > 0 && options.merge) {
-    const nav = doc.createElement("nav");
-    nav.className = "toc";
-    const h = doc.createElement("h2");
-    h.textContent = "Contents";
-    const list = doc.createElement("ol");
+    const nav = createEl("nav", { cls: "toc" });
+    const h = createEl("h2", { text: "Contents" });
+    const list = createEl("ol");
     for (const n of notes) {
-      const li = doc.createElement("li");
+      const li = createEl("li");
       li.appendChild(anchor(doc, `#${n.id}`, n.title));
       const inner = n.outline.filter((o) => o.level === 2 || o.level === 1);
       if (inner.length > 0) {
-        const sub = doc.createElement("ol");
+        const sub = createEl("ol");
         for (const o of inner) {
-          const item = doc.createElement("li");
+          const item = createEl("li");
           item.appendChild(anchor(doc, `#${o.id}`, o.text));
           sub.appendChild(item);
         }
@@ -258,24 +243,15 @@ export function assembleDocument(input: AssembleInput): string {
 }
 
 function anchor(doc: Document, href: string, text: string): HTMLAnchorElement {
-  const a = doc.createElement("a");
-  a.href = href;
-  a.textContent = text;
-  return a;
+  return createEl("a", { text, attr: { href } });
 }
 
 function span(className: string, text: string): HTMLSpanElement {
-  const el = document.createElement("span");
-  el.className = className;
-  el.textContent = text;
-  return el;
+  return createSpan({ cls: className, text });
 }
 
 function note(text: string): HTMLElement {
-  const p = document.createElement("p");
-  p.className = "embed-file";
-  p.textContent = text;
-  return p;
+  return createEl("p", { cls: "embed-file", text });
 }
 
 function splitFirst(text: string, sep: string): [string, string] {
@@ -289,7 +265,7 @@ async function settle(el: HTMLElement, maxMs = 4000) {
   let last = "";
   let stable = 0;
   while (Date.now() - started < maxMs) {
-    await new Promise((resolve) => setTimeout(resolve, 120));
+    await new Promise((resolve) => window.setTimeout(resolve, 120));
     const busy = el.querySelector(".markdown-rendering, .is-loading, .dataview-loading") !== null;
     const now = el.innerHTML.length + ":" + el.querySelectorAll("svg, img, mjx-container").length;
     stable = now === last && !busy ? stable + 1 : 0;
@@ -309,6 +285,7 @@ export async function mathCss(): Promise<string> {
     let data = fontCache.get(rel);
     if (!data) {
       try {
+        // fetch, not requestUrl: app:// resource URLs (Obsidian's bundled fonts) are only readable by the renderer's fetch.
         const response = await fetch(new URL(rel, "app://obsidian.md/").href);
         if (!response.ok) continue;
         data = `data:font/woff2;base64,${Buffer.from(await response.arrayBuffer()).toString("base64")}`;

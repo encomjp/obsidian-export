@@ -77,7 +77,7 @@ export class ExportModal extends Modal {
       .addDropdown((d) => d.addOption("obsidian", "Open in Obsidian").addOption("plain", "Plain text").setValue(o.otherLinks).onChange((v) => { o.otherLinks = v as OtherNoteLinks; }));
     new Setting(el).setName("Page size").addDropdown((d) => d.addOptions({ A4: "A4", A5: "A5", Letter: "Letter", Legal: "Legal" }).setValue(o.pageSize).onChange((v) => { o.pageSize = v as PageSize; }))
       .addToggle((t) => t.setTooltip("Landscape").setValue(o.landscape).onChange((v) => { o.landscape = v; }));
-    new Setting(el).setName("Margin (mm)").addSlider((s) => s.setLimits(5, 40, 1).setValue(o.margin).setDynamicTooltip().onChange((v) => { o.margin = v; }));
+    new Setting(el).setName("Margin (mm)").addSlider((s) => s.setLimits(5, 40, 1).setValue(o.margin).onChange((v) => { o.margin = v; }));
     new Setting(el).setName("Save to folder").setDesc("Inside your vault. Existing files are never overwritten.").addText((t) => t.setPlaceholder("Exports").setValue(o.outputFolder).onChange((v) => { o.outputFolder = v; }));
   }
 
