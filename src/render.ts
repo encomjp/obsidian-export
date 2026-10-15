@@ -57,7 +57,7 @@ export class NoteRenderer {
   private async renderMarkdown(markdown: string, file: TFile, depth: number, outline: RenderedNote["outline"] | null): Promise<HTMLElement> {
     const host = document.createElement("div");
     host.className = "markdown-rendered note-body";
-    host.style.cssText = "position:fixed;left:-99999px;top:0;width:820px;visibility:hidden";
+    host.setCssProps({ position: "fixed", left: "-99999px", top: "0", width: "820px", visibility: "hidden" });
     document.body.appendChild(host);
     const component = new Component();
     component.load();

@@ -37,7 +37,7 @@ writes the HTML instead and you can print it from a browser.
 
 ### Manual
 
-Unzip into `<vault>/.obsidian/plugins/export-studio/` and enable **Export Studio**. To build:
+Copy `main.js`, `manifest.json` and `styles.css` from the latest release into `<vault>/.obsidian/plugins/export-studio/` and enable **Export Studio**. To build:
 
 ```bash
 npm install && npm run build
