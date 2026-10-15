@@ -49,6 +49,12 @@ npm install && npm run build
 
 `npm test` runs the unit tests for the link, anchor and selection logic.
 
+## Disclosures
+
+- **Network use:** none. Fonts and math are taken from Obsidian itself and embedded in the file.
+- **Files outside your vault:** to make a PDF, the plugin writes one temporary HTML file to your operating system's temp folder, prints it with Obsidian's built-in Electron `printToPDF`, and deletes it straight afterwards. Finished PDF and HTML files are written inside your vault (the output folder you pick). This is desktop only for PDF.
+- **No** account, payment, ads, telemetry or self-updating.
+
 ## Support
 
 If this saves you time, you can [buy me a coffee](https://www.paypal.com/donate/?hosted_button_id=H4SCC24R8KS4A).
